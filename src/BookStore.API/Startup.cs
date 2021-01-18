@@ -11,6 +11,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
+using BookStore.API.Autofac;
+using BookStore.API.Connections;
+using BookStore.API.Logs;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookStore.API
 {
@@ -26,12 +31,16 @@ namespace BookStore.API
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddDbContext<ApplicationDbContext>(options => { options.UseSqlServer(Configuration.GetValue<string>("DefaultConnection")); });
 
-      services.AddControllers();
-      services.AddSwaggerGen(c =>
-      {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "BookStore.API", Version = "v1" });
-      });
+      services.AddControllers()
+        .AddControllersAsServices();
+      services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "BookStore.API", Version = "v1"}); });
+    }
+
+    public void ConfigureContainer(ContainerBuilder builder)
+    {
+      builder.RegisterModule(new AutofacRegisterModule());
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,10 +59,7 @@ namespace BookStore.API
 
       app.UseAuthorization();
 
-      app.UseEndpoints(endpoints =>
-      {
-        endpoints.MapControllers();
-      });
+      app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
   }
 }

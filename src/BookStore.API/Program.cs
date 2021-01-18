@@ -4,8 +4,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac.Extensions.DependencyInjection;
+using BookStore.API.Connections;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BookStore.API
 {
@@ -13,14 +17,22 @@ namespace BookStore.API
   {
     public static void Main(string[] args)
     {
-      CreateHostBuilder(args).Build().Run();
+      var host = CreateHostBuilder(args).Build();
+      using (var scope = host.Services.CreateScope())
+      {
+        scope.Seeding();
+      }
+
+      host.Run();
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-              webBuilder.UseStartup<Startup>();
-            });
+      Host.CreateDefaultBuilder(args)
+        .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+        .ConfigureWebHostDefaults(webBuilder =>
+        {
+          webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
+          webBuilder.UseStartup<Startup>();
+        });
   }
 }
