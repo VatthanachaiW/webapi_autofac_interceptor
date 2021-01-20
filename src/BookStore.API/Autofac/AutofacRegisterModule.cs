@@ -3,7 +3,7 @@ using Autofac.Extensions.DependencyInjection;
 using Autofac.Extras.DynamicProxy;
 using BookStore.API.Connections;
 using BookStore.API.Controllers;
-using BookStore.API.Logs;
+using BookStore.API.Loggers;
 using BookStore.API.Models;
 using BookStore.API.Repositories;
 using BookStore.API.Services;

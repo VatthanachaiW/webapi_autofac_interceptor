@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using Autofac;
 using BookStore.API.Autofac;
 using BookStore.API.Connections;
-using BookStore.API.Logs;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStore.API
@@ -31,6 +30,8 @@ namespace BookStore.API
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      log4net.GlobalContext.Properties["ProductName"] = "BookStore.API";
+
       services.AddDbContext<ApplicationDbContext>(options => { options.UseSqlServer(Configuration.GetValue<string>("DefaultConnection")); });
 
       services.AddControllers()
